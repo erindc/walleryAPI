@@ -1,0 +1,31 @@
+{
+  "name": "walleryapi",
+  "version": "1.0.0",
+  "description": "wallery api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node_modules/.bin/nodemon app.js --exec babel-node --"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erindc/walleryapi.git"
+  },
+  "author": "erindc",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/erindc/walleryapi/issues"
+  },
+  "homepage": "https://github.com/erindc/walleryapi#readme",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "body-parser": "^1.18.3",
+    "dotenv": "^7.0.0",
+    "express": "^4.16.4",
+    "pg": "^7.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  }
+}
