@@ -29,6 +29,13 @@ app.get('/api', (req, res) => {
   });
 });
 
+app.get('/', (req, res) => {
+    try {
+      res.status(200).json({ message: 'ok' });
+    } catch (e) {
+      res.status(500).json({ error: e });
+    }
+});
 app.listen(port, () => {
   console.log(`server running on port ${port}`)
 });
