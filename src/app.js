@@ -1,7 +1,9 @@
 require('dotenv').config()
-import express from 'express';
-import bodyParser from 'body-parser';
-import pool from './db/db';
+const express = require('express');
+const bodyParser = require('body-parser');
+const { Pool } = require('pg')
+
+const pool = new Pool()
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -10,24 +12,21 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// get all todos
+// test db
 app.get('/api', (req, res) => {
   (async () => {
     const client = await pool.connect()
     try {
-      const res = await client.query('SELECT * FROM images')
-      res.status(200).send({
-        body: res,
-      })
+      const data = await client.query('SELECT * from images')
+      console.log(data)
+      res.status(200).json({ data:data.rows });
     } finally {
       client.release()
     }
   })().catch(e => {
     console.log(e.stack)
-    res.status(500).send({
-      error: e,
-    })
-  })
+    res.status(500).json({ error: e });
+  });
 });
 
 app.listen(port, () => {
