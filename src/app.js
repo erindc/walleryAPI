@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const healthCheck = require ('./controllers/health');
 const imageController = require('./controllers/image/image_controller');
+const uploadsController = require('./controllers/uploads/uploads_controller');
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -12,6 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(healthCheck);
 app.use(imageController);
+app.use(uploadsController);
 
 
 app.listen(port, () => {

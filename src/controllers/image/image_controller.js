@@ -29,7 +29,8 @@ router.post('/images', function(req, res) {
 })
 
 //TODO flag and like endpoint  (not working need to fix)
-router.post('/images/:id', function(req, res) {
+router.post('/images', function(req, res) {
+  //req.body.id
   res.status(200);
 })
 
