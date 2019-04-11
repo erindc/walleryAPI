@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(healthCheck);
 app.use(imageController);
-app.use(uploadsController);
+// app.use(uploadsController);
 
 
 app.listen(port, () => {
