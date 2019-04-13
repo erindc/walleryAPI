@@ -11,48 +11,15 @@ const pool = new Pool({
   ssl: true
 })
 
-var s3  = new AWS.S3({
-  accessKeyId: process.env.BUCKETEER_AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.BUCKETEER_AWS_SECRET_ACCESS_KEY,
-  region: 'us-east-1',
-});
-
 router.get('/images', async function(req, res) {
-  (async () => {
     try {
-      // var params = {
-      //   Key: 'public/',
-      //   Bucket: process.env.BUCKETEER_BUCKET_NAME
-      // };
-
-      // let awsErr = null;
-      // let images;
-
-      // s3.getObject(params, function put(err, data) {
-      //   if (err) {
-      //     console.error(err, err.stack);
-      //     awsErr = err;
-      //   }
-      //   images = data;
-      //   console.log(data);
-      //   console.log(data.Body.toString());
-      // });
-
-      // console.log('images', images);
-
-      // if (awsErr) {
-      //   res.status(500).json({error: 'Internal error occured'});
-      //   return;
-      // }
-
-      // const client = await pool.connect()
-      // const data = await client.query('SELECT * from images')
-      res.status(200).json({ images: images });
-  } 
-  finally {
-    // client.release()
-  }
-})().catch(e => console.log(e.stack))
+      const data = await pool.query('SELECT * FROM images ORDER BY likes DESC')
+      console.log(data);
+      res.status(200).json(data.rows);
+    } catch (err) {
+      console.error('Error during upload: ', err);
+      res.status(500).json({error: 'Internal error occured'});
+    }
 })
 
 router.post('/images', upload.single('walleryImage'), async function(req, res) {
@@ -67,31 +34,26 @@ router.post('/images', upload.single('walleryImage'), async function(req, res) {
       Body: file.buffer
     };
 
-    await new Promise((resolve, reject) => {
+    var s3  = new AWS.S3({
+      accessKeyId: process.env.BUCKETEER_AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.BUCKETEER_AWS_SECRET_ACCESS_KEY,
+      region: 'us-east-1',
+    });
+
+    const location = await new Promise((resolve, reject) => {
       s3.upload(params, function put(err, data) {
         if (err) {
           console.error(err, err.stack);
           reject(err);
         }
-        resolve(data);
+        resolve(data.Location);
       });
     })
 
-    pool.connect(async (err, client, done) => {
-      if (err) {
-        console.error('Error connecting to pool: ', err);
-        throw err
-      }
+    const image = await pool.query('INSERT INTO images(user_id, image_tag, purchased, likes, flags, location) VALUES($1, $2, $3, $4, $5, $6) RETURNING *',
+    [uuidv4(), `public/${uuid}${file.originalname}`, false, 0, 0, location]);
 
-      const query = {
-        text: 'INSERT INTO images(user_id, image_tag, purchased, likes, flags) VALUES($1, $2, $3, $4, $5)',
-        values: [uuidv4(), `public/${uuid}${file.originalname}`, false, 0, 0],
-      }
-
-      await client.query(query);
-      done();
-    })
-    res.sendStatus(201);
+    res.status(201).json(image.rows);
  } catch (err) {
     console.error('Error during upload: ', err);
     res.status(500).json({error: 'Internal error occured'});
