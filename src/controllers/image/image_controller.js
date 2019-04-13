@@ -14,8 +14,8 @@ const pool = new Pool({
 router.get('/images', async function(req, res) {
     try {
       var s3  = new AWS.S3({
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        accessKeyId: process.env.BUCKETEER_AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.BUCKETEER_AWS_SECRET_ACCESS_KEY,
         region: 'us-east-1',
       });
 
@@ -49,7 +49,8 @@ router.post('/images', upload.single('walleryImage'), async function(req, res) {
       Key: `public/${uuidv4()}${file.originalname}`,
       Bucket: process.env.BUCKETEER_BUCKET_NAME,
       Body: file.buffer,
-      ContentType: 'image/png'
+      ContentType: 'image/png',
+      GrantAccess: 'Everyone'
     };
 
     var s3  = new AWS.S3({
