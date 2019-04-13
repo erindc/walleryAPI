@@ -11,33 +11,53 @@ const pool = new Pool({
   ssl: true
 })
 
+var s3  = new AWS.S3({
+  accessKeyId: process.env.BUCKETEER_AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.BUCKETEER_AWS_SECRET_ACCESS_KEY,
+  region: 'us-east-1',
+});
+
 router.get('/images', async function(req, res) {
   (async () => {
     try {
-      const client = await pool.connect()
+      // var params = {
+      //   Key: 'public/',
+      //   Bucket: process.env.BUCKETEER_BUCKET_NAME
+      // };
+
+      // let awsErr = null;
+      // let images;
+
       // s3.getObject(params, function put(err, data) {
-      //   if (err) console.log(err, err.stack);
-      //   else     console.log(data);
-    
+      //   if (err) {
+      //     console.error(err, err.stack);
+      //     awsErr = err;
+      //   }
+      //   images = data;
+      //   console.log(data);
       //   console.log(data.Body.toString());
       // });
-      const data = await client.query('SELECT * from images')
-      res.status(200).json({ images: data.rows });
-  } finally {
-    client.release()
+
+      // console.log('images', images);
+
+      // if (awsErr) {
+      //   res.status(500).json({error: 'Internal error occured'});
+      //   return;
+      // }
+
+      // const client = await pool.connect()
+      // const data = await client.query('SELECT * from images')
+      res.status(200).json({ images: images });
+  } 
+  finally {
+    // client.release()
   }
 })().catch(e => console.log(e.stack))
 })
 
-router.post('/images', upload.single('walleryImage'), function(req, res) {
+router.post('/images', upload.single('walleryImage'), async function(req, res) {
   try {
     const file = req.file
-
-    var s3  = new AWS.S3({
-      accessKeyId: process.env.BUCKETEER_AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.BUCKETEER_AWS_SECRET_ACCESS_KEY,
-      region: 'us-east-1',
-    });
 
     let uuid = uuidv4();
 
@@ -47,18 +67,15 @@ router.post('/images', upload.single('walleryImage'), function(req, res) {
       Body: file.buffer
     };
 
-    let awsErr = null;
-    
-    s3.upload(params, function put(err) {
-      if (err) {
-        console.error(err, err.stack);
-        awsErr = err;
-      }
-    });
-    if (awsErr) {
-      res.status(500).json({error: 'Internal error occured'});
-      return;
-    }
+    await new Promise((resolve, reject) => {
+      s3.upload(params, function put(err, data) {
+        if (err) {
+          console.error(err, err.stack);
+          reject(err);
+        }
+        resolve(data);
+      });
+    })
 
     pool.connect(async (err, client, done) => {
       if (err) {
