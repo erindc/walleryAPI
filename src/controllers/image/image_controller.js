@@ -31,7 +31,8 @@ router.post('/images', upload.single('walleryImage'), async function(req, res) {
     var params = {
       Key: `public/${uuid}${file.originalname}`,
       Bucket: process.env.BUCKETEER_BUCKET_NAME,
-      Body: file.buffer
+      Body: file.buffer,
+      ContentType: "image/png"
     };
 
     var s3  = new AWS.S3({
@@ -40,18 +41,18 @@ router.post('/images', upload.single('walleryImage'), async function(req, res) {
       region: 'us-east-1',
     });
 
-    const location = await new Promise((resolve, reject) => {
-      s3.upload(params, function put(err, data) {
+    await new Promise((resolve, reject) => {
+      s3.putObject(params, function put(err, data) {
         if (err) {
           console.error(err, err.stack);
           reject(err);
         }
-        resolve(data.Location);
+        resolve(data);
       });
     })
 
     const image = await pool.query('INSERT INTO images(user_id, image_tag, purchased, likes, flags, location) VALUES($1, $2, $3, $4, $5, $6) RETURNING *',
-    [uuidv4(), `public/${uuid}${file.originalname}`, false, 0, 0, location]);
+    [uuidv4(), `public/${uuid}${file.originalname}`, false, 0, 0, `https://bucketeer-fd97f80b-c9ae-47af-9785-9ee39bb37e64.s3.amazonaws.com/${params.Key}`]);
 
     res.status(201).json(image.rows);
  } catch (err) {
