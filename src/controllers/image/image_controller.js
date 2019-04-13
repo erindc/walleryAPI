@@ -50,7 +50,7 @@ router.post('/images', upload.single('walleryImage'), async function(req, res) {
       Bucket: process.env.BUCKETEER_BUCKET_NAME,
       Body: file.buffer,
       ContentType: 'image/png',
-      GrantAccess: 'Everyone'
+      GrantRead: 'Everyone'
     };
 
     var s3  = new AWS.S3({
