@@ -17,6 +17,7 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.use(express.static('public'))
 app.use(healthCheck);
 app.use(imageController);
 
