@@ -1,6 +1,7 @@
 require('dotenv').config()
 const express = require('express');
 const bodyParser = require('body-parser');
+const http = require('http');
 const healthCheck = require ('./controllers/health');
 const imageController = require('./controllers/image/image_controller');
 
@@ -25,3 +26,7 @@ app.use(imageController);
 app.listen(port, () => {
   console.log(`server running on port ${port}`)
 });
+
+setInterval(function() {
+  http.get('https://wallery-api.herokuapp.com');
+}, 300000);
