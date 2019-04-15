@@ -27,6 +27,21 @@ router.get('/images', async function(req, res) {
     }
 })
 
+router.patch('/images/:id', async function(req, res) {
+  try {
+    if (req.body.likes) {
+      await pool.query('UPDATE images set likes=likes+$1',
+      [req.body.likes]);
+    } else if (req.body.flags) {
+      await pool.query('UPDATE images set flags=flags+$1',
+      [req.body.flags]);
+    }
+  } catch (err) {
+    console.error('Error during upload: ', err);
+    res.status(500).json({error: 'Internal error occured'});
+  }
+})
+
 router.post('/images', upload.single('walleryImage'), async function(req, res) {
   try {
     const file = req.file
@@ -45,13 +60,6 @@ router.post('/images', upload.single('walleryImage'), async function(req, res) {
     console.error('Error during upload: ', err);
     res.status(500).json({error: 'Internal error occured'});
   }
-})
-
-
-//TODO flag and like endpoint  (not working need to fix)
-router.patch('/images', function(req, res) {
-  //req.body.id
-  res.status(200);
 })
 
 module.exports = router;
