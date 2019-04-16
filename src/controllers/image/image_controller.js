@@ -38,7 +38,7 @@ router.put('/images/:id', async function(req, res) {
     }
     res.sendStatus(204);
   } catch (err) {
-    console.error('Error during upload: ', err);
+    console.error('Error during edit: ', err);
     res.status(500).json({error: 'Internal error occured'});
   }
 })
