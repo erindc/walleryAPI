@@ -27,15 +27,16 @@ router.get('/images', async function(req, res) {
     }
 })
 
-router.patch('/images/:id', async function(req, res) {
+router.put('/images/:id', async function(req, res) {
   try {
     if (req.body.likes) {
-      await pool.query('UPDATE images set likes=likes+$1',
-      [req.body.likes]);
+      await pool.query('UPDATE images set likes=likes+1 WHERE image_tag=$1',
+      [req.params.id]);
     } else if (req.body.flags) {
-      await pool.query('UPDATE images set flags=flags+$1',
-      [req.body.flags]);
+      await pool.query('UPDATE images set flags=flags+1 WHERE image_tag=$1',
+      [req.params.id]);
     }
+    res.sendStatus(204);
   } catch (err) {
     console.error('Error during upload: ', err);
     res.status(500).json({error: 'Internal error occured'});

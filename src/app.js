@@ -15,6 +15,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, PATCH, DELETE, OPTIONS');
   next();
 });
 
@@ -27,6 +28,7 @@ app.listen(port, () => {
   console.log(`server running on port ${port}`)
 });
 
+//to prevent heroku instance from sleeping
 setInterval(function() {
   https.get('https://wallery-api.herokuapp.com');
 }, 300000);
