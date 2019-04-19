@@ -13,3 +13,9 @@ Functionality includes:
 - Save user 'flag' to related image
 - Mark images as 'purchased'
 - Display saved user images
+
+#### Run the server
+`npm start`
+
+#### Run the tests
+`npm test`
