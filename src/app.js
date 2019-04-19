@@ -3,7 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const https = require('https');
 const healthCheck = require ('./controllers/health');
-const imageController = require('./controllers/image/image_controller');
+const imageController = require('./controllers/image_controller');
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -32,3 +32,5 @@ app.listen(port, () => {
 setInterval(function() {
   https.get('https://wallery-api.herokuapp.com');
 }, 300000);
+
+module.exports = app;

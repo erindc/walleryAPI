@@ -12,10 +12,10 @@ var storage = multer.diskStorage({
 });
 var upload = multer({storage: storage});
 
-const pool = new Pool({
+const pool = process.env.NODE_ENV === 'prod' ? new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: true
-})
+}) : new Pool();
 
 router.get('/images', async function(req, res) {
     try {
