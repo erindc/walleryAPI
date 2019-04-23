@@ -5,7 +5,7 @@ const https = require('https');
 const healthCheck = require ('./controllers/health');
 const imageController = require('./controllers/image_controller');
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3005;
 const app = express();
 
 // Parse incoming requests data
