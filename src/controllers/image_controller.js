@@ -19,7 +19,7 @@ const pool = process.env.NODE_ENV === 'prod' ? new Pool({
 
 router.get('/images', async function(req, res) {
     try {
-      const images = await pool.query('SELECT * FROM images ORDER BY likes DESC');
+      const images = await pool.query('SELECT * FROM images WHERE purchased=false ORDER BY likes DESC');
       res.status(200).json(images.rows);
     } catch (err) {
       console.error('Error getting images: ', err);
@@ -36,6 +36,17 @@ router.put('/images/:id', async function(req, res) {
       await pool.query('UPDATE images set flags=flags+1 WHERE image_tag=$1',
       [req.params.id]);
     }
+    res.sendStatus(204);
+  } catch (err) {
+    console.error('Error during edit: ', err);
+    res.status(500).json({error: 'Internal error occured'});
+  }
+})
+
+router.put('/images/purchase/:id', async function(req, res) {
+  try {
+    await pool.query('UPDATE images set purchased=true WHERE image_tag=$1',
+      [req.params.id]);
     res.sendStatus(204);
   } catch (err) {
     console.error('Error during edit: ', err);
