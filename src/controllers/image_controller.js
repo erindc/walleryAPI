@@ -57,7 +57,7 @@ router.put('/images/purchase/:id', async function(req, res) {
 router.post('/images', upload.single('walleryImage'), async function(req, res) {
   try {
     const file = req.file
-    const validTypes = ['image/png', 'image/pdf', 'image/jpeg']
+    const validTypes = ['image/png', 'image/pdf', 'image/jpeg', 'image/jpg']
 
     if (!validTypes.includes(file.mimetype)) {
       res.status(400).json({msg: 'Invalid file type'});
